@@ -84,20 +84,21 @@ class SongParser(object):
          
          
 class Joke(object): 
-    base_url = "http://api.icndb.com/jokes/random?limitTo=[{}]"
-    def __init__(self):
-        super().__init__()
-        
-
+    
     def get_chuck_norris_joke(self, category): 
         """
         category - "nerdy" or "explicit"
         """
         if category not in ['nerdy', 'explicit']: 
-            InvalidChuckNorrisJokeCategory()
+            InvalidChuckNorrisJokeCategoryException()
         base_url = "http://api.icndb.com/jokes/random?limitTo=[{}]".format(category)
         response, session = make_request("get", base_url)
         joke_json = response.json()
-		joke_msg = html.unescape(joke_json['value']['joke'])  # decoding the html encoding in the joke
-		return joke_msg
+        joke_msg = html.unescape(joke_json['value']['joke'])  # decoding the html encoding in the joke
+        return joke_msg
         
+    def get_joke(self, joke_type, category=None):
+        if joke_type == "CHUCK_N": 
+            return self.get_chuck_norris_joke(category)
+        else: 
+            raise InvalidJokeTypeException(joke_type)
