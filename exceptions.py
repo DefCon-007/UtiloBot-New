@@ -7,7 +7,7 @@ class BaseFunctionalityException(Exception):
 class InvalidSongURLException(BaseFunctionalityException): 
     def __init__(self, return_msg=None):
         if not return_msg:
-            return_msg = "Invalid or no song URL supplied. Please add the URL alongwith command!"
+            return_msg = "Invalid or no song URL supplied. Please add the song URL along with the command!"
         super().__init__(return_msg)
 
 

@@ -4,7 +4,7 @@ from commonregex import CommonRegex
 from exceptions import *
 from helper import make_request
 from sentry_sdk import capture_message
-
+import html
 
 parser = CommonRegex()
 
@@ -98,7 +98,29 @@ class Joke(object):
         return joke_msg
         
     def get_joke(self, joke_type, category=None):
-        if joke_type == "CHUCK_N": 
+        if joke_type == "CHUCKN": 
             return self.get_chuck_norris_joke(category)
         else: 
             raise InvalidJokeTypeException(joke_type)
+
+class TelegramParseCallbackQueryData(object): 
+    """
+    This class parses all the callback data responses. The core data should be separated by a `_` and first 
+    string should define type, and then other identifiers accodingly. 
+    """
+    def __init__(self, data_list):
+        assert len(data_list) > 0 
+        self.category = data_list[0].upper().strip()
+        self.identifiers = data_list[1:]
+
+    def parse(self):
+        """
+        Returns: text, args which needs to be sent to  sendMessage function directly
+        """
+        if self.category == "JOKE": 
+            return self.parse_joke(), {}
+        
+    def parse_joke(self): 
+        joke_obj = Joke()
+        return joke_obj.get_joke(self.identifiers[0], self.identifiers[1])
+    
