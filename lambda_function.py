@@ -4,7 +4,8 @@ import os
 import sentry_sdk
 from helper import make_request
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from bot_functionalities import SongParser, TelegramParseCallbackQueryData
+from bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
+from random import randint
 from exceptions import BaseFunctionalityException
 
 sentry_sdk.init(
@@ -16,9 +17,22 @@ TELE_TOKEN = os.environ['BOT_TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TELE_TOKEN)
 
 
+
+def sendChatAction(chat_action, chat_id): 
+    assert chat_action in ['typing', 'upload_photo', 'record_video', 'upload_video', 
+                           'record_audio', 'upload_audio', 'upload_document', 'find_location', 
+                           'record_video_note', 'upload_video_note'], "Unidentified chat action detected!"
+    args = {}
+    args['chat_id'] = chat_id
+    args['action'] = chat_action
+    request, session = make_request("post", URL+"sendChatAction", None, {'json': args})
+
+
 def send_message(text, chat_id, args={}):
     args['chat_id'] = chat_id
     args['text'] = text
+    if "parse_mode" not in args: 
+        args['parse_mode'] = "HTML"
     request, session = make_request("post", URL+"sendMessage", None, {'json': args})
 
 
@@ -34,10 +48,11 @@ def send_inline_keyboard(text, chat_id, reply_markup, data):
 def parse_user_text(msg_text, chat_id):
     send_message("Unknown message! Please try again", chat_id)
 
-def parse_bot_commands(command, chat_id): 
+def parse_bot_commands(command, chat_id, body): 
     clean_command = command.lower()
     if "/song" in clean_command:
         # The user wants to parse the song URL
+        sendChatAction('typing', chat_id)
         song_object = SongParser(command)
         data_list = song_object.convert_song()
         song_open_button = []
@@ -55,6 +70,46 @@ def parse_bot_commands(command, chat_id):
         joke_buttons = [[{'text':"Chuch Norris nerdy joke" , 'callback_data' : 'JOKE_CHUCKN_nerdy'}],[{'text':'Chuch Norris explicit joke' , 'callback_data' : 'JOKE_CHUCKN_explicit'}]]
         send_inline_keyboard(message, chat_id, "inline_keyboard", joke_buttons)
         
+    elif "/short" in clean_command: 
+        # The user wants to shorten a URL 
+        url_shortner_object = URLShortner(command)
+        short_url = url_shortner_object.get_short_url()
+        message = "The shortend URL for the provided link is {}".format(short_url)
+        send_message(message, chat_id)
+    
+    elif "/start" in clean_command: 
+        # The starting message send to the user
+        welcome_message_1 = [
+        "Hi ",
+        "Hola ",
+        "Hey ",
+        "Hey there, "
+        ]
+
+        welcome_message_2 = [
+        "! Looks like we haven't met before.",
+        "! Looks like this is our first meet.",
+        "! How are you doing.",
+        ]
+
+        welcome_message_3 = [
+        " Send /help to know my secrets."
+        ]
+        message = body.get('message')
+        name = None
+        if message and message.get('chat'): 
+            chat = message['chat']
+            if chat.get('type') == "private": 
+                name = chat.get('first_name')
+        rand_index1 = randint(0,len(welcome_message_1) -1)
+        rand_index2 = randint(0,len(welcome_message_2) -1)
+        rand_index3 = randint(0,len(welcome_message_3) -1)
+        if name: 
+            msg1 = welcome_message_1[rand_index1] + name
+        else: 
+            msg1 = welcome_message_1[rand_index1][:-1]
+        msg = msg1 + welcome_message_2[rand_index2]+ welcome_message_3[rand_index3]
+        send_message(msg, chat_id)	
     else:
         send_message("Unknown command! Please try again", chat_id)
     
@@ -68,7 +123,7 @@ def parse_incoming_request(body, chat_id):
             
             # Parse entity types in precedance order
             if "bot_command" in entities_list: 
-                parse_bot_commands(msg.get('text'), chat_id)
+                parse_bot_commands(msg.get('text'), chat_id, body)
     if 'callback_query' in body: 
         # Parse the callback query
         callback_query = body.get('callback_query')

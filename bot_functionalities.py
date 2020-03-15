@@ -4,6 +4,7 @@ from commonregex import CommonRegex
 from exceptions import *
 from helper import make_request
 from sentry_sdk import capture_message
+from urllib.parse import urlencode
 import html
 
 parser = CommonRegex()
@@ -103,6 +104,25 @@ class Joke(object):
         else: 
             raise InvalidJokeTypeException(joke_type)
 
+
+class URLShortner(object): 
+    base_url = 'http://tinyurl.com/api-create.php?'
+    
+    def __init__(self, data):
+        urls = parser.links(data)
+        if len(urls) == 0: 
+            raise NoURLToShortenException()
+        else: 
+            self.url = urls[0]
+        
+    def get_short_url(self):
+        tinyurl = self.base_url +  urlencode({'url':self.url})
+        response, session = make_request("get", tinyurl)
+        if not response: 
+            raise UnableToShortenURLException()
+        return response.text
+
+    
 class TelegramParseCallbackQueryData(object): 
     """
     This class parses all the callback data responses. The core data should be separated by a `_` and first 
@@ -119,6 +139,8 @@ class TelegramParseCallbackQueryData(object):
         """
         if self.category == "JOKE": 
             return self.parse_joke(), {}
+        else: 
+            raise InvalidCallbackQueryCategoryException(self.category)
         
     def parse_joke(self): 
         joke_obj = Joke()
