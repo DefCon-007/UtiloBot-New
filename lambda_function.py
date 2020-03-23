@@ -110,6 +110,19 @@ def parse_bot_commands(command, chat_id, body):
             msg1 = welcome_message_1[rand_index1][:-1]
         msg = msg1 + welcome_message_2[rand_index2]+ welcome_message_3[rand_index3]
         send_message(msg, chat_id)	
+    
+    elif "/help" in clean_command: 
+        help_message = "Following are the commands and usages for the bot.\n\n" \
+        "<strong>1. Convert songs form one streaming service to others</strong>\n" \
+        "Just use the command /song along with the URL of the song and receive links of the same song on other services.\n" \
+        "For e.g. /song https://www.youtube.com/watch?v=w2Ov5jzm3j8\n\n" \
+        "<strong>2. Get random jokes</strong>\n" \
+        "Send /joke and follow the onscreen instructions to receive the jokes.\n\n" \
+        "<strong>3. Shorten a URL</strong>\n" \
+        "Use the command /short and send the URL you wish to shorten and receive a short URL instantly." \
+        "For e.g. /short https://www.google.com"
+        send_message(help_message, chat_id, {"disable_web_page_preview": True})
+        
     else:
         send_message("Unknown command! Please try again", chat_id)
     
