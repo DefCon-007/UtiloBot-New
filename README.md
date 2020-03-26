@@ -11,11 +11,12 @@
 
 > A multi-utility bot for Telegram. Make your life easier and get music links to every platform, shorten URLs, etc without ever leaving telegram.
 
-### 🏠 [Homepage](http://utilobot.defcon007.com)
+### 🏠 [Homepage](https://utilobot.defcon007.com)
 
 ### ✨ [Demo](https://t.me/UtiloBot)
 
-### Build
+## Build
+
 This bot is hosted on AWS Lambda for better scalability and less maintainance. 
 
 The project is based on Python 3.6, make sure you have the correct python version by using `python --version` or `python3 --version`. 
