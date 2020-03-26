@@ -3,7 +3,7 @@ import json
 from commonregex import CommonRegex
 from exceptions import *
 from helper import make_request
-from sentry_sdk import capture_message
+from sentry_sdk import capture_message, capture_exception
 from urllib.parse import urlencode
 import html
 
@@ -50,7 +50,9 @@ class SongParser(object):
             "headers": self.headers,
             "data": json.dumps(self.payload)
         }
-        response, session = make_request("POST", self.base_url, None, args)     
+        response, session = make_request("POST", self.base_url, None, args)   
+        if not response: 
+            raise InvalidSongURLException("Unable to parse this song. Please try with some other.")
         response_json = response.json()
         converted_links = []
         if response_json.get('status') == "success":

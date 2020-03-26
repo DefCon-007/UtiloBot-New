@@ -7,6 +7,7 @@ from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
 from random import randint
 from exceptions import BaseFunctionalityException
+from sentry_sdk import capture_exception
 
 sentry_sdk.init(
     os.environ.get('SENTRY_DSN'),
@@ -166,7 +167,11 @@ def lambda_handler(event, context):
     try:
         parse_incoming_request(body, chat_id)
     except BaseFunctionalityException as e:
+        capture_exception(e)
         send_message(e.return_msg, chat_id)
+    except Exception as e: 
+        capture_exception(e)
+        send_message("Some internal error occured! Please try again later.", chat_id)
     return {
         'statusCode': 200
     }
