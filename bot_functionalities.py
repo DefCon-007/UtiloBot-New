@@ -34,7 +34,8 @@ class SongParser(object):
         "googleplayStore": "Google Play Store",
         "amazon": "Amazon",
         "amazonMusic": "Amazon Music",
-        "napster": "Napster"
+        "napster": "Napster",
+        "soundcloud": "Sound Cloud"
     }
     
     def __init__(self, command): 
