@@ -4,7 +4,7 @@
   <a href="https://github.com/DefCon-007/UtiloBot-New/blob/master/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
-  <a href="https://twitter.com/defcon\_007" target="_blank">
+  <a href="https://twitter.com/defcon_007" target="_blank">
     <img alt="Twitter: defcon_007" src="https://img.shields.io/twitter/follow/defcon_007.svg?style=social" />
   </a>
 </p>
@@ -37,7 +37,7 @@ The project is based on Python 3.6, make sure you have the correct python versio
 👤 **Ayush Goyal**
 
 * Website: https://www.defcon007.com/
-* Twitter: [@defcon\_007](https://twitter.com/defcon\_007)
+* Twitter: [@defcon_007](https://twitter.com/defcon_007)
 * Github: [@DefCon-007](https://github.com/DefCon-007)
 * LinkedIn: [@defcon-007](https://linkedin.com/in/defcon-007)
 
