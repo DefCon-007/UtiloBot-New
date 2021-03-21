@@ -134,10 +134,10 @@ def parse_bot_commands(command, chat_id, body):
         "<strong>2. Get random jokes</strong>\n" \
         "Send /joke and follow the onscreen instructions to receive the jokes.\n\n" \
         "<strong>3. Shorten a URL</strong>\n" \
-        "Use the command /short and send the URL you wish to shorten and receive a short URL instantly." \
-        "For e.g. /short https://www.google.com"
+        "Use the command /short and send the URL you wish to shorten and receive a short URL instantly.\n" \
+        "For e.g. /short https://www.google.com\n\n" \
         "<strong>4. Play dice game</strong>\n" \
-        "Use the command /dice and you will receive a random dice outcome." \
+        "Use the command /dice and you will receive a random dice outcome."
         send_message(help_message, chat_id, {"disable_web_page_preview": True})
         
     else:

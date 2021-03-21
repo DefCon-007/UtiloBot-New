@@ -29,8 +29,8 @@ The project is based on Python 3.6, make sure you have the correct python versio
 - Install the dependancies. 
   ```pip install -r requirements.txt```
 - Now, you can work and add your logic in the `lambda_function.py`. This is the main file which runs when we receive a telegram API webhook. After you are done, just create a zip and upload it to AWS Lambda.
-- Create a zip file.
-  ```./create_zip.sh```
+- Use the following command to deploy to google cloud function. 
+  ```gcloud functions deploy <FUNCTION_NAME> --runtime python38 --trigger-http --allow-unauthenticated --region asia-south1 --entry-point=lambda_handler```
 
 ### Connecting Telegram 
 
