@@ -30,12 +30,15 @@ def sendChatAction(chat_action, chat_id):
     request, session = make_request("post", URL+"sendChatAction", None, {'json': args})
 
 
-def send_message(text, chat_id, args={}):
+def send_message(text, chat_id, args={}, relative_url=None):
     args['chat_id'] = chat_id
-    args['text'] = text
-    if "parse_mode" not in args: 
-        args['parse_mode'] = "HTML"
-    request, session = make_request("post", URL+"sendMessage", None, {'json': args})
+    if text:
+        args['text'] = text
+        if "parse_mode" not in args: 
+            args['parse_mode'] = "HTML"
+    if not relative_url: 
+        relative_url = "sendMessage"
+    request, session = make_request("post", URL+relative_url, None, {'json': args})
 
 
 def send_inline_keyboard(text, chat_id, reply_markup, data):
@@ -45,6 +48,12 @@ def send_inline_keyboard(text, chat_id, reply_markup, data):
             }
     }
     send_message(text, chat_id, args)
+    
+def send_dice(chat_id): 
+    args = {
+        "emoji": "🎲"
+    }
+    send_message(None, chat_id, args, "sendDice")
 
 
 def parse_user_text(msg_text, chat_id):
@@ -54,6 +63,7 @@ def parse_bot_commands(command, chat_id, body):
     clean_command = command.lower()
     if "/song" in clean_command:
         # The user wants to parse the song URL
+        send_message("Paring song, please wait !!!", chat_id)
         sendChatAction('typing', chat_id)
         song_object = SongParser(command)
         data_list = song_object.convert_song()
@@ -78,6 +88,9 @@ def parse_bot_commands(command, chat_id, body):
         short_url = url_shortner_object.get_short_url()
         message = "The shortend URL for the provided link is {}".format(short_url)
         send_message(message, chat_id)
+        
+    elif "/dice" in clean_command: 
+        send_dice(chat_id)
     
     elif "/start" in clean_command: 
         # The starting message send to the user
@@ -123,6 +136,8 @@ def parse_bot_commands(command, chat_id, body):
         "<strong>3. Shorten a URL</strong>\n" \
         "Use the command /short and send the URL you wish to shorten and receive a short URL instantly." \
         "For e.g. /short https://www.google.com"
+        "<strong>4. Play dice game</strong>\n" \
+        "Use the command /dice and you will receive a random dice outcome." \
         send_message(help_message, chat_id, {"disable_web_page_preview": True})
         
     else:

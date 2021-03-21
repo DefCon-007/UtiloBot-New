@@ -17,7 +17,7 @@
 
 ## Build
 
-This bot is hosted on AWS Lambda for better scalability and less maintainance. 
+This bot is hosted on Google cloud functions for better scalability and less maintainance. 
 
 The project is based on Python 3.6, make sure you have the correct python version by using `python --version` or `python3 --version`. 
 
@@ -31,6 +31,11 @@ The project is based on Python 3.6, make sure you have the correct python versio
 - Now, you can work and add your logic in the `lambda_function.py`. This is the main file which runs when we receive a telegram API webhook. After you are done, just create a zip and upload it to AWS Lambda.
 - Create a zip file.
   ```./create_zip.sh```
+
+### Connecting Telegram 
+
+- Use Telegram's BotFather to create a new bot and add the corresponding bot token as environment variable named `BOT_TOKEN`. 
+- After the cloud function deployment is done, we need to add a new webhook url to get updates. Copy the cloud function public URL and use the guide [here](https://xabaras.medium.com/setting-your-telegram-bot-webhook-the-easy-way-c7577b2d6f72) to create a new webhook.
 
 ## Author
 
