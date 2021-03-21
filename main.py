@@ -2,17 +2,18 @@ import json
 import requests
 import os
 import sentry_sdk
-from helper import make_request
-from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
+from utilobot.helper import make_request
+# from sentry_sdk.integrations.gcp import GcpIntegration
+from utilobot.bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
 from random import randint
-from exceptions import BaseFunctionalityException
+from utilobot.exceptions import BaseFunctionalityException
 from sentry_sdk import capture_exception
 
-sentry_sdk.init(
-    os.environ.get('SENTRY_DSN'),
-    integrations=[AwsLambdaIntegration()]
-)
+# sentry_sdk.init(
+#     os.environ.get('SENTRY_DSN'),
+#     integrations=[GcpIntegration()],
+#     traces_sample_rate=1.0,
+# )
 
 TELE_TOKEN = os.environ['BOT_TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TELE_TOKEN)
@@ -157,21 +158,18 @@ def get_chat_id_from_body(body):
     if 'callback_query' in body: 
         return body['callback_query']['message']['chat']['id']
     
-def lambda_handler(event, context):
-    print(event)
-    if not isinstance(event['body'], dict):
-        body = json.loads(event['body'])
-    else:
-        body = event['body']
+def lambda_handler(request):
+    body = request.get_json()
+    print(body)
     chat_id = get_chat_id_from_body(body)
     try:
         parse_incoming_request(body, chat_id)
     except BaseFunctionalityException as e:
-        capture_exception(e)
+        # capture_exception(e)
         send_message(e.return_msg, chat_id)
     except Exception as e: 
-        capture_exception(e)
-        send_message("Some internal error occured! Please try again later.", chat_id)
+        # capture_exception(e)
+        send_message("Some internal error occurred! Please try again later.", chat_id)
     return {
         'statusCode': 200
     }

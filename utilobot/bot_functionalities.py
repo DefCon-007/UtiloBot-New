@@ -1,8 +1,8 @@
 import requests
 import json
 from commonregex import CommonRegex
-from exceptions import *
-from helper import make_request
+from .exceptions import *
+from .helper import make_request
 from sentry_sdk import capture_message, capture_exception
 from urllib.parse import urlencode
 import html
