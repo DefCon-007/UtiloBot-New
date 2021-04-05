@@ -19,3 +19,9 @@ def make_request(method, url, session=None, args={}):
         print("Got invalid response, status-{}, \nresponse-{}".format(response.status_code,
                                                                                 response.text))
         return None, session
+    
+def add_document_to_firestore(collectionName, docId, data):
+    from google.cloud import firestore
+    db = firestore.Client()
+    doc_ref = db.collection(collectionName).document(docId)
+    doc_ref.set(data)

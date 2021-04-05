@@ -2,13 +2,13 @@ import json
 import requests
 import os
 import sentry_sdk
-from utilobot.helper import make_request
+from utilobot.helper import make_request, add_document_to_firestore
 # from sentry_sdk.integrations.gcp import GcpIntegration
 from utilobot.bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
 from random import randint
 from utilobot.exceptions import BaseFunctionalityException
 from sentry_sdk import capture_exception
-
+from google.cloud import firestore
 # sentry_sdk.init(
 #     os.environ.get('SENTRY_DSN'),
 #     integrations=[GcpIntegration()],
@@ -91,6 +91,7 @@ def parse_bot_commands(command, chat_id, body):
         
     elif "/dice" in clean_command: 
         send_dice(chat_id)
+        
     
     elif "/start" in clean_command: 
         # The starting message send to the user
@@ -167,16 +168,31 @@ def parse_incoming_request(body, chat_id):
     # if msg and msg.get('text'):
     #     parse_user_text(msg['text'].strip(), chat_id)
 
-def get_chat_id_from_body(body): 
+def get_message_data(body): 
     if 'message' in body: 
-        return body['message']['chat']['id']
+        return body['message']
     if 'callback_query' in body: 
-        return body['callback_query']['message']['chat']['id']
+        return body['callback_query']['message']
+    
+def get_chat_id_from_body(body): 
+    data = get_message_data(body)
+    return data['chat']['id']
+
     
 def lambda_handler(request):
     body = request.get_json()
     print(body)
     chat_id = get_chat_id_from_body(body)
+    chat_data = get_message_data(body)['chat']
+    firestore_data = {
+        "chat_id": str(chat_id),
+        "first_name": chat_data.get("first_name", " "),
+        "last_name": chat_data.get("last_name", " "),
+        "username": chat_data.get("username", " "),
+        "type": chat_data.get("type", " "),
+    }
+
+    add_document_to_firestore("telegramusers", str(chat_id), firestore_data)
     try:
         parse_incoming_request(body, chat_id)
     except BaseFunctionalityException as e:
