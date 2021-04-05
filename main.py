@@ -3,17 +3,17 @@ import requests
 import os
 import sentry_sdk
 from utilobot.helper import make_request, add_document_to_firestore
-# from sentry_sdk.integrations.gcp import GcpIntegration
+from sentry_sdk.integrations.gcp import GcpIntegration
 from utilobot.bot_functionalities import SongParser, TelegramParseCallbackQueryData, URLShortner
 from random import randint
 from utilobot.exceptions import BaseFunctionalityException
 from sentry_sdk import capture_exception
 from google.cloud import firestore
-# sentry_sdk.init(
-#     os.environ.get('SENTRY_DSN'),
-#     integrations=[GcpIntegration()],
-#     traces_sample_rate=1.0,
-# )
+sentry_sdk.init(
+    os.environ.get('SENTRY_DSN'),
+    integrations=[GcpIntegration(timeout_warning=True)],
+    traces_sample_rate=1.0,
+)
 
 TELE_TOKEN = os.environ['BOT_TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TELE_TOKEN)
